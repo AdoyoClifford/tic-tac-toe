@@ -19,6 +19,10 @@ fun main(args: Array<String>) {
     println("Its your move $name")
 
     val board = Array(3) { Array(3) { '_' } }
+
+    val human = Human()
+    human.makeMove(board)
+
     for (row in board.indices) {
         print("|")
         for (colum in board[row].indices) {
@@ -29,28 +33,9 @@ fun main(args: Array<String>) {
         println()
     }
 
-    while (true) {
-        val number = readlnOrNull()?.toInt()
-        if (number in 0..8) {
-            when (number) {
-                0 -> board[0][0]
-                1 -> board[0][1]
-                2 -> board[0][2]
-                3 -> board[1][0]
-                4 -> board[1][1]
-                5 -> board[1][2]
-                6 -> board[2][0]
-                7 -> board[2][1]
-                8 -> board[2][2]
-            }
-        } else {
-            println("Enter a number between 0..8")
-        }
-
-
-    }
-
 }
+
+
 
 fun checkWinner(board: Array<Array<Char>>): Boolean {
     for (i in board.indices) {
@@ -77,7 +62,7 @@ interface Player {
 }
 
 class Human : Player {
-    override fun makeMove(board: Array<Array<Char>>){
+    override fun makeMove(board: Array<Array<Char>>) {
         // get user input
         val input = readln().toInt()
         val location = (input - 1) / 3 * 3 + (input - 1) % 3
@@ -86,7 +71,7 @@ class Human : Player {
 
 }
 
-class Computer: Player {
+class Computer : Player {
     override fun makeMove(board: Array<Array<Char>>) {
         val input = Random.nextInt(9)
         val location = (input - 1) / 3 * 3 + (input - 1) % 3
