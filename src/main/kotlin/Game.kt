@@ -1,11 +1,14 @@
+import java.lang.IllegalArgumentException
+import kotlin.system.exitProcess
+
 class Game {
 
     private val board = MutableList<Cell>(size = 9) { Cell.Empty }
-    private var status = GameStatus.Idle
+    private var status: GameStatus = GameStatus.Idle
     private lateinit var player: Player
 
     fun start() {
-        val status = GameStatus.Running
+        status = GameStatus.Running
         val welcomeMessage = """
                ------------------------
         | Welcome to Tic Tac Toe! |
@@ -14,12 +17,22 @@ class Game {
         """.trimIndent()
         println(welcomeMessage)
         getName()
-        displayBoard()
+        while (status is GameStatus.Running) {
+            getCell()
+        }
 
     }
 
     private fun getCell() {
-        TODO("Not yet implemented")
+        val input = readlnOrNull()
+        try {
+            requireNotNull(value = input)
+            val cellNumber = input.toInt()
+            require(value = cellNumber in 1..8)
+            setCell(selectedCell = cellNumber)
+        } catch (e: Exception) {
+            println("Invalid number")
+        }
     }
 
     private fun setCell(selectedCell: Int) {
@@ -43,7 +56,7 @@ class Game {
     private fun generateComputerMove() {
         try {
             val availableCells = mutableListOf<Int>()
-            board.forEachIndexed{index, cell ->
+            board.forEachIndexed { index, cell ->
                 if (cell is Cell.Empty) availableCells.add(index)
             }
             if (availableCells.isNotEmpty()) {
@@ -69,6 +82,78 @@ class Game {
             listOf(0, 4, 8),
             listOf(2, 4, 6)
         )
+
+        val player1Cells = mutableListOf<Int>()
+        val player2Cells = mutableListOf<Int>()
+        board.forEachIndexed { index, cell ->
+            if (cell.placeHolder == 'X') player1Cells.add(index)
+            if (cell.placeHolder == 'O') player2Cells.add(index)
+        }
+        println("YOUR MOVES $player1Cells")
+        println("COMPUTER MOVES $player2Cells")
+
+        run CombinationLoop@{
+            winningCombination.forEach { combination ->
+                if (player1Cells.containsAll(elements = combination)) {
+                    won()
+                    return@CombinationLoop
+                }
+                if (player2Cells.containsAll(elements = combination)) {
+                    lost()
+                    return@CombinationLoop
+                }
+            }
+            if (board.none{it is Cell.Empty} && status is GameStatus.Running){
+                draw()
+            }
+            if (status is GameStatus.GameOver) {
+                finish()
+                playAgain()
+            }
+
+        }
+    }
+
+    private fun lost() {
+        status = GameStatus.GameOver
+        displayBoard()
+        println("Sorry ${player.name} lost")
+    }
+
+    private fun won() {
+        status = GameStatus.GameOver
+        displayBoard()
+        println("Congratulations ${player.name} won")
+    }
+    private fun draw() {
+        status = GameStatus.GameOver
+        displayBoard()
+        println("Draw!")
+    }
+
+    private fun finish() {
+        status = GameStatus.Idle
+        board.replaceAll { Cell.Empty }
+    }
+
+    private fun playAgain() {
+        print("Do you wish to play again? Y/N:")
+        val input = readlnOrNull()
+        try {
+            requireNotNull(value = input)
+            val capitalizedInput = input.replaceFirstChar(Char::titlecase)
+            val positive = capitalizedInput.contains(other = "Y")
+            val negative = capitalizedInput.contains(other = "N")
+            require(value = positive || negative)
+            if (positive) {
+                start()
+            } else if (negative) {
+                exitProcess(status = 0)
+            }
+        } catch (e: IllegalArgumentException) {
+            println("Wrong option type either Y or N")
+            playAgain()
+        }
     }
 
     private fun displayBoard() {
