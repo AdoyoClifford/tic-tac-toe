@@ -1,4 +1,5 @@
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 fun main(args: Array<String>) {
 
@@ -21,20 +22,23 @@ fun main(args: Array<String>) {
     val board = Array(3) { Array(3) { '_' } }
 
     val human = Human()
-    human.makeMove(board)
+    val computer = Computer()
 
-    for (row in board.indices) {
-        print("|")
-        for (colum in board[row].indices) {
-            print(board[row][colum])
-            print(' ')
+    while (!checkWinner(board)) {
+        human.makeMove(board)
+        computer.makeMove(board)
+        for (row in board.indices) {
+            print("|")
+            for (colum in board[row].indices) {
+                print(board[row][colum])
+                print(' ')
+            }
+            print("|")
+            println()
         }
-        print("|")
-        println()
+
     }
-
 }
-
 
 
 fun checkWinner(board: Array<Array<Char>>): Boolean {
@@ -64,19 +68,36 @@ interface Player {
 class Human : Player {
     override fun makeMove(board: Array<Array<Char>>) {
         // get user input
-        val input = readln().toInt()
-        val location = (input - 1) / 3 * 3 + (input - 1) % 3
-        board[location / 3][location % 3] = 'X'
-    }
+        while (true) {
+            val input = readln().toInt()
 
+            if (input in 1..9) {
+                val location = (input - 1) / 3 * 3 + (input - 1) % 3
+                board[location / 3][location % 3] = 'X'
+                break
+            } else {
+                println("Please enter a number between 1 and 9.")
+            }
+        }
+    }
 }
+
 
 class Computer : Player {
     override fun makeMove(board: Array<Array<Char>>) {
-        val input = Random.nextInt(9)
-        val location = (input - 1) / 3 * 3 + (input - 1) % 3
-        board[location / 3][location % 3] = 'O'
+        var foundSpot = false
+
+        while (!foundSpot) {
+            val input = Random.nextInt(1..9)
+            println(input)
+            val location = (input - 1) / 3 * 3 + (input - 1) % 3
+            if (board[location / 3][location % 3] == '_') {
+                board[location / 3][location % 3] = 'O'
+                foundSpot = true
+            }
+        }
     }
 }
+
 
 
