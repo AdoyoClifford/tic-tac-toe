@@ -8,36 +8,38 @@ fun main(args: Array<String>) {
     // Enter a number between 0..8 throw exception if you enter an invalid number
     //congratulatory message
 
-    val welcomeMessage = """
-          ------------------------
-        | Welcome to Tic Tac Toe! |
-        | Pick a number from 0..8 |
-          ------------------------
-    """.trimIndent()
-    println(welcomeMessage)
-    print("Choose your name: ")
-    val name = readlnOrNull()
-    println("Its your move $name")
-
-    val board = Array(3) { Array(3) { '_' } }
-
-    val human = Human()
-    val computer = Computer()
-
-    while (!checkWinner(board)) {
-        human.makeMove(board)
-        computer.makeMove(board)
-        for (row in board.indices) {
-            print("|")
-            for (colum in board[row].indices) {
-                print(board[row][colum])
-                print(' ')
-            }
-            print("|")
-            println()
-        }
-
-    }
+//    val welcomeMessage = """
+//          ------------------------
+//        | Welcome to Tic Tac Toe! |
+//        | Pick a number from 0..8 |
+//          ------------------------
+//    """.trimIndent()
+//    println(welcomeMessage)
+//    print("Choose your name: ")
+//    val name = readlnOrNull()
+//    println("Its your move $name")
+//
+//    val board = Array(3) { Array(3) { '_' } }
+//
+//    val human = Human()
+//    val computer = Computer()
+//
+//    while (!checkWinner(board)) {
+//        human.makeMove(board)
+//        computer.makeMove(board)
+//        for (row in board.indices) {
+//            print("|")
+//            for (colum in board[row].indices) {
+//                print(board[row][colum])
+//                print(' ')
+//            }
+//            print("|")
+//            println()
+//        }
+//
+//    }
+    val game = Game()
+    game.start()
 }
 
 
@@ -61,11 +63,11 @@ fun checkWinner(board: Array<Array<Char>>): Boolean {
     return false
 }
 
-interface Player {
+interface Players {
     fun makeMove(board: Array<Array<Char>>)
 }
 
-class Human : Player {
+class Human : Players {
     override fun makeMove(board: Array<Array<Char>>) {
         // get user input
         while (true) {
@@ -83,7 +85,7 @@ class Human : Player {
 }
 
 
-class Computer : Player {
+class Computer : Players {
     override fun makeMove(board: Array<Array<Char>>) {
         var foundSpot = false
 
@@ -98,6 +100,9 @@ class Computer : Player {
         }
     }
 }
+
+
+
 
 
 
